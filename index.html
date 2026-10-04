@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Hole & Mole Game</title>
+</head>
+
+<body class="intro-active">
+    <div class="background" aria-hidden="true"></div>
+
+    <div class="gate" hidden>
+        <div class="gate-card">
+            <h2>🐹 Hole &amp; Mole</h2>
+            <p>Do you dare to catch me?</p>
+            <button class="start-btn gate-btn" type="button">▶ Enter the game 🔊</button>
+        </div>
+    </div>
+
+    <div class="intro" role="dialog" aria-label="Game introduction">
+        <div class="speech" aria-live="polite"></div>
+        <div class="intro-holes" aria-hidden="true">
+            <div class="intro-hole"><div class="intro-mole"></div></div>
+            <div class="intro-hole"><div class="intro-mole"></div></div>
+            <div class="intro-hole"><div class="intro-mole"></div></div>
+        </div>
+        <button class="small-btn skip-btn" type="button">Skip ▶</button>
+    </div>
+
+    <h1>
+        Catch me, If you can
+        <span class="score" aria-live="polite">0</span>
+    </h1>
+
+    <div class="hud">
+        <div>Best <b class="best">0</b></div>
+        <div>Time <b class="time">15.0</b>s</div>
+        <div>Combo <b class="combo">x1</b></div>
+        <div class="lives" aria-label="Lives"></div>
+    </div>
+
+    <div class="bar">
+        <div class="bar-fill"></div>
+    </div>
+
+    <fieldset class="levels">
+        <legend>Difficulty</legend>
+        <div>
+            <input type="radio" name="level" id="easy" checked>
+            <label for="easy">Easy</label>
+        </div>
+        <div>
+            <input type="radio" name="level" id="medium">
+            <label for="medium">Medium</label>
+        </div>
+        <div>
+            <input type="radio" name="level" id="hard">
+            <label for="hard">Hard</label>
+        </div>
+    </fieldset>
+
+    <div class="controls">
+        <button class="start-btn" type="button">Start!</button>
+        <button class="small-btn pause-btn" type="button" disabled>Pause</button>
+        <button class="small-btn mute-btn" type="button" aria-label="Toggle sound">🔊</button>
+        <p class="status" aria-live="polite">Hit moles, grab golden ones ✨, avoid bombs 💣</p>
+    </div>
+
+    <div class="game"></div>
+
+    <div class="overlay" role="dialog" aria-modal="true" hidden>
+        <div class="card">
+            <h2 class="over-title">Time's up!</h2>
+            <p class="over-score"></p>
+            <p class="over-best"></p>
+            <div class="card-buttons">
+                <button class="start-btn again-btn" type="button">Play again!</button>
+                <button class="small-btn change-btn" type="button">Change level</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        &copy; <span class="year">2026</span> AR Shourov. All rights reserved.
+    </footer>
+
+    <script src="script.js" defer></script>
+</body>
+
+</html>

@@ -1,0 +1,684 @@
+/* ---------- Variables & reset ---------- */
+:root {
+    --bg: #191919;
+    --panel: #302f2fed;
+    --green: #4caf50;
+    --pink: #c2185b;
+    --blue: #187bc2;
+    --gold: #ffd24e;
+    --red: #ff3b3b;
+    --rows: 2;
+    --cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Ctext y='32' font-size='30'%3E🔨%3C/text%3E%3C/svg%3E") 6 6, pointer;
+    --cursor-smash: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Ctext y='32' font-size='30' transform='rotate(-45 20 20)'%3E🔨%3C/text%3E%3C/svg%3E") 6 6, pointer;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: cursive;
+    background-color: var(--bg);
+    color: #fff;
+    padding-bottom: 30px;
+    user-select: none;
+}
+
+/* ---------- Animated background ---------- */
+.background {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    background: linear-gradient(135deg, #0f0c29, #1b1b3a, #24243e, #1a2a1a, #0f0c29);
+    background-size: 400% 400%;
+    animation: sky 30s ease infinite;
+}
+
+/* Dark grassy ground at the bottom */
+.background::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 22%;
+    background: linear-gradient(to top, #0d1f0d, transparent);
+}
+
+/* Glowing moon */
+.background::before {
+    content: "";
+    position: absolute;
+    top: 8%;
+    right: 10%;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #fffbe6, #e8e0b0);
+    box-shadow: 0 0 40px 10px #fffbe655;
+    animation: moon 6s ease-in-out infinite;
+}
+
+.star {
+    position: absolute;
+    width: var(--size);
+    height: var(--size);
+    border-radius: 50%;
+    background-color: #fff;
+    animation: twinkle var(--duration) ease-in-out var(--delay) infinite;
+}
+
+.firefly {
+    position: absolute;
+    bottom: -20px;
+    width: var(--size);
+    height: var(--size);
+    border-radius: 50%;
+    background-color: var(--gold);
+    box-shadow: 0 0 10px 3px #ffd24e99;
+    animation: float var(--duration) linear var(--delay) infinite;
+}
+
+/* Background moves faster while a round is running */
+body.playing .background {
+    animation-duration: 12s;
+}
+
+@keyframes sky {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+@keyframes moon {
+    50% {
+        box-shadow: 0 0 55px 18px #fffbe666;
+    }
+}
+
+@keyframes twinkle {
+    0%,
+    100% {
+        opacity: 0.15;
+        transform: scale(0.8);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.3);
+    }
+}
+
+@keyframes float {
+    0% {
+        opacity: 0;
+        transform: translate(0, 0);
+    }
+
+    15% {
+        opacity: 1;
+    }
+
+    50% {
+        transform: translate(var(--drift), -50vh);
+    }
+
+    85% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(calc(var(--drift) * -1), -105vh);
+    }
+}
+
+/* ---------- Intro screen ---------- */
+.intro {
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 36px;
+    background-color: #000000a0;
+    transition: opacity 0.6s;
+}
+
+.intro.leaving {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.speech {
+    position: relative;
+    max-width: 90vw;
+    padding: 12px 26px;
+    border-radius: 1.2rem;
+    font-size: clamp(1.1rem, 4vw, 1.8rem);
+    font-weight: bold;
+    text-align: center;
+    color: #222;
+    background-color: #fff;
+}
+
+.speech:empty {
+    visibility: hidden;
+}
+
+.speech::after {
+    content: "";
+    position: absolute;
+    bottom: -12px;
+    left: 50%;
+    margin-left: -12px;
+    border: 12px solid transparent;
+    border-top-color: #fff;
+    border-bottom: 0;
+}
+
+.speech.show {
+    animation: speech 0.35s;
+}
+
+@keyframes speech {
+    from {
+        opacity: 0;
+        transform: scale(0.6);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.intro-holes {
+    display: flex;
+    gap: clamp(8px, 3vw, 30px);
+}
+
+.intro-hole {
+    position: relative;
+    width: min(28vw, 190px);
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+}
+
+.intro-hole::after {
+    content: "";
+    position: absolute;
+    bottom: -15%;
+    z-index: 2;
+    width: 100%;
+    height: 55%;
+    background: url("hole.png") bottom center / contain no-repeat;
+}
+
+.intro-mole {
+    position: absolute;
+    top: 100%;
+    width: 100%;
+    height: 100%;
+    background: url("mole.png") bottom center / 80% no-repeat;
+    transition: top 0.35s;
+}
+
+.intro-hole.up .intro-mole {
+    top: 0;
+    animation: wiggle 0.5s ease-in-out 0.35s infinite;
+}
+
+@keyframes wiggle {
+    0%,
+    100% {
+        transform: rotate(-6deg);
+    }
+
+    50% {
+        transform: rotate(6deg);
+    }
+}
+
+.skip-btn {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+}
+
+/* "Enter" screen: one click lets the browser play sound */
+.gate {
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #000000d0;
+}
+
+.gate[hidden] {
+    display: none;
+}
+
+.gate-card {
+    padding: 30px 40px;
+    text-align: center;
+}
+
+.gate-card h2 {
+    margin-bottom: 8px;
+    font-size: clamp(2rem, 8vw, 3.5rem);
+}
+
+.gate-card p {
+    margin-bottom: 24px;
+    font-size: 1.3rem;
+}
+
+.gate-btn {
+    animation: pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    50% {
+        transform: scale(1.08);
+    }
+}
+
+/* Hide the game until the intro is over, then fade it in */
+body.intro-active > *:not(.background):not(.intro):not(.gate) {
+    visibility: hidden;
+}
+
+body.revealed > *:not(.background):not(.intro):not(.gate) {
+    animation: reveal 0.8s ease backwards;
+}
+
+@keyframes reveal {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+}
+
+/* ---------- Footer ---------- */
+.footer {
+    margin-top: 40px;
+    padding: 0 10px;
+    font-size: 0.95rem;
+    text-align: center;
+    color: #bbb;
+}
+
+/* ---------- Title & score ---------- */
+h1 {
+    text-align: center;
+    font-size: 3rem;
+    line-height: 1;
+    margin-top: 35px;
+}
+
+.score {
+    display: inline-block;
+    min-width: 4ch;
+    padding: 1rem;
+    border-radius: 1rem;
+    color: var(--green);
+    background-color: var(--panel);
+}
+
+.score.bump {
+    animation: bump 0.25s;
+}
+
+@keyframes bump {
+    50% {
+        transform: scale(1.3);
+    }
+}
+
+/* ---------- HUD & timer bar ---------- */
+.hud {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 28px;
+    margin: 22px 0 8px;
+    font-size: 1.2rem;
+}
+
+.hud b {
+    color: var(--gold);
+}
+
+.lives {
+    letter-spacing: 3px;
+}
+
+.bar {
+    width: min(92vw, 600px);
+    height: 10px;
+    margin: 0 auto;
+    border-radius: 5px;
+    background-color: #333;
+    overflow: hidden;
+}
+
+.bar-fill {
+    width: 100%;
+    height: 100%;
+    background-color: var(--green);
+    transition: width 0.1s linear, background-color 0.3s;
+}
+
+.bar-fill.low {
+    background-color: var(--red);
+}
+
+/* ---------- Difficulty selector ---------- */
+.levels {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    font-size: 20px;
+    transition: opacity 0.3s;
+}
+
+.levels legend {
+    position: absolute;
+    left: -9999px;
+}
+
+.levels.locked {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+.levels > div {
+    margin: 14px 20px;
+}
+
+.levels > div:nth-of-type(1) {
+    color: #00ff00;
+}
+
+.levels > div:nth-of-type(2) {
+    color: var(--gold);
+}
+
+.levels > div:nth-of-type(3) {
+    color: #ff0000;
+}
+
+/* ---------- Buttons ---------- */
+.controls {
+    margin: 5px;
+    text-align: center;
+}
+
+.start-btn {
+    padding: 10px 25px;
+    border: 0;
+    font-family: inherit;
+    font-size: 24px;
+    color: #fff;
+    background-color: var(--pink);
+    box-shadow: 1px 2px 4px #c2185bb0;
+    cursor: pointer;
+}
+
+.start-btn:hover:not(:disabled) {
+    background-color: var(--blue);
+    box-shadow: 1px 2px 4px #185fc2b0;
+}
+
+.small-btn {
+    margin-left: 6px;
+    padding: 10px 16px;
+    border: 0;
+    font-family: inherit;
+    font-size: 18px;
+    color: #fff;
+    background-color: #444;
+    cursor: pointer;
+}
+
+.small-btn:hover:not(:disabled) {
+    background-color: var(--blue);
+}
+
+.start-btn:disabled,
+.small-btn:disabled {
+    background-color: #555;
+    box-shadow: none;
+    cursor: not-allowed;
+}
+
+.status {
+    min-height: 1.5em;
+    margin-top: 10px;
+}
+
+/* ---------- Game board ---------- */
+.game {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(var(--rows), 1fr);
+    width: min(92vw, 600px);
+    aspect-ratio: 3 / var(--rows);
+    margin: 10px auto 0;
+    cursor: var(--cursor);
+    touch-action: manipulation;
+}
+
+.game.smash {
+    cursor: var(--cursor-smash);
+}
+
+.hole {
+    position: relative;
+    overflow: hidden;
+}
+
+.hole::after {
+    content: "";
+    position: absolute;
+    bottom: -15%;
+    z-index: 2;
+    width: 100%;
+    height: 55%;
+    background: url("hole.png") bottom center / contain no-repeat;
+    pointer-events: none;
+}
+
+/* ---------- Moles ---------- */
+.mole {
+    position: absolute;
+    top: 100%;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background: url("mole.png") bottom center / 80% no-repeat;
+    transition: top 0.4s;
+    cursor: inherit;
+}
+
+.hole.up .mole {
+    top: 0;
+}
+
+.mole:focus-visible {
+    outline: 3px solid var(--gold);
+    outline-offset: -3px;
+}
+
+.mole::before {
+    position: absolute;
+    top: 6%;
+    left: 50%;
+    z-index: 3;
+    font-size: 1.6rem;
+    transform: translateX(-50%);
+}
+
+.mole[data-type="gold"] {
+    filter: sepia(1) saturate(5) brightness(1.25);
+}
+
+.mole[data-type="gold"]::before {
+    content: "✨";
+}
+
+.mole[data-type="bomb"] {
+    filter: grayscale(1) brightness(0.35);
+}
+
+.mole[data-type="bomb"]::before {
+    content: "💣";
+}
+
+.mole.dizzy {
+    animation: dizzy 0.4s;
+}
+
+.mole.dizzy::before {
+    content: "💫";
+}
+
+@keyframes dizzy {
+    25% {
+        transform: rotate(-12deg);
+    }
+
+    75% {
+        transform: rotate(12deg);
+    }
+}
+
+/* ---------- Score popups ---------- */
+.pop {
+    position: absolute;
+    z-index: 5;
+    font-size: 1.6rem;
+    font-weight: bold;
+    text-shadow: 0 2px 4px #000;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    animation: pop 0.8s forwards;
+}
+
+.pop.good {
+    color: var(--green);
+}
+
+.pop.gold {
+    color: var(--gold);
+}
+
+.pop.bad {
+    color: var(--red);
+}
+
+@keyframes pop {
+    to {
+        opacity: 0;
+        transform: translate(-50%, -140%);
+    }
+}
+
+/* ---------- Game-over window ---------- */
+.overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #000a;
+}
+
+.overlay[hidden] {
+    display: none;
+}
+
+.card {
+    padding: 30px 40px;
+    border-radius: 1rem;
+    text-align: center;
+    background-color: #222;
+    box-shadow: 0 0 30px #000;
+    animation: bump 0.3s;
+}
+
+.card p {
+    margin: 10px 0;
+    font-size: 1.3rem;
+}
+
+.card-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.card-buttons .small-btn {
+    margin-left: 0;
+}
+
+.new-best {
+    color: var(--gold);
+}
+
+/* ---------- Responsive & accessibility ---------- */
+@media (max-width: 768px) {
+    h1 {
+        padding: 0 10px;
+        font-size: 2rem;
+    }
+
+    .score {
+        margin: 10px;
+        padding: 0.6rem;
+    }
+
+    .hud {
+        gap: 14px;
+        font-size: 1rem;
+    }
+
+    .levels > div {
+        margin: 8px 12px;
+    }
+
+    .start-btn {
+        padding: 8px 20px;
+        font-size: 20px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation: none !important;
+        transition: none !important;
+    }
+}
